@@ -21,19 +21,19 @@ if [ -z "$WERCKER_SLACK_NOTIFIER_ICON_URL" ]; then
   export WERCKER_SLACK_NOTIFIER_ICON_URL="https://secure.gravatar.com/avatar/a08fc43441db4c2df2cef96e0cc8c045?s=140"
 fi
 
+export MESSAGE="for $WERCKER_APPLICATION_NAME by $WERCKER_STARTED_BY has $WERCKER_RESULT on branch $WERCKER_GIT_BRANCH"
+
 # check if this event is a build or deploy
 if [ -n "$DEPLOY" ]; then
   # its a deploy!
-  export ACTION="deploy"
-  export ACTION_URL=$WERCKER_DEPLOY_URL
+  export MESSAGE="<$WERCKER_DEPLOY_URL|deploy> to $WERCKER_DEPLOYTARGET_NAME $MESSAGE"
+  export FALLBACK="deploy to $WERCKER_DEPLOYTARGET_NAME $MESSAGE"
 else
   # its a build!
-  export ACTION="build"
-  export ACTION_URL=$WERCKER_BUILD_URL
+  export MESSAGE="<$WERCKER_BUILD_URL|build> $MESSAGE"
+  export FALLBACK="build $MESSAGE"
 fi
 
-export MESSAGE="<$ACTION_URL|$ACTION> for $WERCKER_APPLICATION_NAME by $WERCKER_STARTED_BY has $WERCKER_RESULT on branch $WERCKER_GIT_BRANCH"
-export FALLBACK="$ACTION for $WERCKER_APPLICATION_NAME by $WERCKER_STARTED_BY has $WERCKER_RESULT on branch $WERCKER_GIT_BRANCH"
 export COLOR="good"
 
 if [ "$WERCKER_RESULT" = "failed" ]; then
